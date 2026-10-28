@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.myshop.databinding.FragmentCheckoutBinding
 
@@ -30,7 +31,6 @@ class CheckoutFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
     }
-
     private var _binding: FragmentCheckoutBinding? = null
     private val binding get() = _binding!!
     override fun onCreateView(
@@ -45,6 +45,24 @@ class CheckoutFragment : Fragment() {
         with(binding){
             val args: CheckoutFragmentArgs by navArgs()
             txtProductName.setText(args.productName)
+
+            edtAddress.setOnClickListener {
+                val action =
+                    CheckoutFragmentDirections.actionCheckoutFragmentToAddressFragment()
+                findNavController().navigate(action)
+            }
+
+            findNavController().currentBackStackEntry
+                ?.savedStateHandle?.let { handle ->
+                    handle.getLiveData<String>("address")
+                        .observe(viewLifecycleOwner) { res ->
+                            edtAddress.setText(res)
+                        }
+                }
+
+            btnDone.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 
